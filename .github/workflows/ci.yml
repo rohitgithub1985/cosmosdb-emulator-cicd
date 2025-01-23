@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-13]
+        os: [ubuntu-latest, macos-latest]
 
     env:
       COSMOSDB_CONNECTION_STRING: ${{ secrets.COSMOSDB_CONNECTION_STRING }}
@@ -32,12 +32,12 @@ jobs:
 
       - name: Set up Docker on macOS
         if: runner.os == 'macOS'
-        uses: douglascamata/setup-docker-macos-action@v1-alpha.16
-        with:
-          lima: "latest"
-          colima: "latest"
-          colima-network-address: "false"
-          colima-additional-options: ""
+        run: |
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask docker
+          sudo /Applications/Docker.app/Contents/MacOS/Docker --unattended --install-privileged-components
+          open -a /Applications/Docker.app --args --unattended --accept-license
+          echo "We are waiting for Docker to be up and running. It can take over 2 minutes..."
+          while ! /Applications/Docker.app/Contents/Resources/bin/docker info &>/dev/null; echo "Waiting for Docker to start"; do sleep 5; done
 
       - name: Verify Docker installation
         run: docker --version
