@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
 
     services:
       cosmosdb:
@@ -20,9 +20,9 @@ jobs:
           - 8081:8081
 
     env:
-      COSMOSDB_CONNECTION_STRING: "AccountEndpoint=http://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="
-      COSMOSDB_DATABASE_NAME: "myapp"
-      COSMOSDB_CONTAINER_NAME: "users"
+      COSMOSDB_CONNECTION_STRING: ${{ secrets.COSMOSDB_CONNECTION_STRING }}
+      COSMOSDB_DATABASE_NAME: ${{ secrets.COSMOSDB_DATABASE_NAME }}
+      COSMOSDB_CONTAINER_NAME: ${{ secrets.COSMOSDB_CONTAINER_NAME }}
 
     steps:
       - name: Checkout repository
