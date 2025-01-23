@@ -7,30 +7,11 @@ on:
     branches: [main]
 
 jobs:
-  setup-docker-macos:
-    runs-on: macos-latest
-    steps:
-      - name: Set up Docker on macOS
-        if: runner.os == 'macOS'
-        run: |
-          brew install --cask docker
-          open /Applications/Docker.app
-
-      - name: Verify Docker installation
-        run: docker --version
-
   test:
     runs-on: ${{ matrix.os }}
-    needs: setup-docker-macos
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-
-    services:
-      cosmosdb:
-        image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview
-        ports:
-          - 8081:8081
 
     env:
       COSMOSDB_CONNECTION_STRING: ${{ secrets.COSMOSDB_CONNECTION_STRING }}
@@ -49,8 +30,27 @@ jobs:
       - name: Check architecture
         run: uname -m
 
+      - name: Set up Docker on macOS
+        if: runner.os == 'macOS'
+        run: |
+          brew install --cask docker
+          open /Applications/Docker.app
+
+      - name: Verify Docker installation
+        run: docker --version
+
+      - name: Start CosmosDB service
+        run: |
+          docker run -d \
+            -p 8081:8081 \
+            --name cosmosdb \
+            mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview
+
       - name: Install dependencies
         run: go mod download
 
       - name: Run tests
         run: go test -v ./...
+
+      - name: Stop CosmosDB service
+        run: docker stop cosmosdb && docker rm cosmosdb
