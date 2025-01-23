@@ -27,14 +27,6 @@ jobs:
         with:
           go-version: 1.23
 
-      - name: Check architecture
-        run: |
-          if (${{ matrix.os }} -eq 'windows-latest') {
-            Write-Host "Architecture: $env:PROCESSOR_ARCHITECTURE"
-          } else {
-            uname -m
-          }
-
       - name: Set up Docker on Windows
         if: runner.os == 'Windows'
         run: |
