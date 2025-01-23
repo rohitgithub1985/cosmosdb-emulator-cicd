@@ -34,7 +34,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install --cask docker
-          open /Applications/Docker.app
+          colima start
           # Wait until Docker is ready
           while ! docker system info > /dev/null 2>&1; do
             echo "Waiting for Docker to start..."
