@@ -11,7 +11,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-2022]
+
+    services:
+      cosmosdb:
+        image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview
+        ports:
+          - 8081:8081
 
     env:
       COSMOSDB_CONNECTION_STRING: ${{ secrets.COSMOSDB_CONNECTION_STRING }}
@@ -20,39 +26,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v2
         with:
           go-version: 1.23
-
-      - name: Set up Docker on Windows
-        if: runner.os == 'Windows'
-        run: |
-          choco install docker-desktop
-          Start-Service docker
-          # Wait until Docker is ready
-          while (-not (docker system info > $null 2>&1)) {
-            Write-Host "Waiting for Docker to start..."
-            Start-Sleep -Seconds 5
-          }
-
-      - name: Verify Docker installation
-        run: docker --version
-
-      - name: Start CosmosDB service
-        run: |
-          docker run -d \
-            -p 8081:8081 \
-            --name cosmosdb \
-            mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview
 
       - name: Install dependencies
         run: go mod download
 
       - name: Run tests
         run: go test -v ./...
-
-      - name: Stop CosmosDB service
-        run: docker stop cosmosdb && docker rm cosmosdb
