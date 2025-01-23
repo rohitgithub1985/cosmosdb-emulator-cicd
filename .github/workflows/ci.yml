@@ -29,19 +29,19 @@ jobs:
 
       - name: Check architecture
         run: |
-          if [ ${{ matrix.os }} == 'windows-latest' ]; then
-            echo Architecture: %PROCESSOR_ARCHITECTURE%
-          else
+          if (${{ matrix.os }} -eq 'windows-latest') {
+            Write-Host "Architecture: $env:PROCESSOR_ARCHITECTURE"
+          } else {
             uname -m
-          fi
+          }
 
       - name: Set up Docker on Windows
         if: runner.os == 'Windows'
         run: |
           choco install docker-desktop
-          start-service docker
+          Start-Service docker
           # Wait until Docker is ready
-          while (! docker system info > $null 2>&1) {
+          while (-not (docker system info > $null 2>&1)) {
             Write-Host "Waiting for Docker to start..."
             Start-Sleep -Seconds 5
           }
