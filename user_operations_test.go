@@ -71,7 +71,6 @@ func TestCreate(t *testing.T) {
 		Active: true,
 	}
 
-
 	err := user.Create(ctx, container, newUser)
 
     require.NoError(t, err)
@@ -79,8 +78,6 @@ func TestCreate(t *testing.T) {
 
 func TestReadItem(t *testing.T) {
     ctx := context.Background()
-
-
 	userID := "42"
 
     userItem, err := user.Read(ctx, container, userID)

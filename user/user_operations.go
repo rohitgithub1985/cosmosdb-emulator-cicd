@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"encoding/json"
-	"log"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/data/azcosmos"
 )
@@ -21,7 +20,7 @@ func Create(ctx context.Context, container *azcosmos.ContainerClient, user User)
         return err
     }
 
-    log.Println("Creating user", string(userBytes))
+    //log.Println("Creating user", string(userBytes))
 
     _, err = container.CreateItem(ctx, azcosmos.NewPartitionKeyString(user.ID), userBytes, nil)
     return err
